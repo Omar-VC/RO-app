@@ -1,0 +1,26 @@
+.header {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #0a1a2f; /* azul oscuro */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: transform 0.2s ease, color 0.2s ease;
+  user-select: none;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  color: #1e90ff;
+}
