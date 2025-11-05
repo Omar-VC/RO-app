@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import { Users, CreditCard } from "lucide-react"; // Agregamos icono de cuotas
+import { Users, CreditCard, Activity } from "lucide-react"; // Agregamos icono de cuotas
 
 export default function Home() {
   const navigate = useNavigate();
@@ -29,6 +29,15 @@ export default function Home() {
         >
           <CreditCard size={60} className="text-green-600 mb-3" />
           <span className="text-lg font-semibold text-gray-800">Cuotas</span>
+        </div>
+
+        {/* PROGRESO */}
+        <div
+          onClick={() => navigate("/progreso")}
+          className="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-md hover:shadow-lg cursor-pointer transition transform hover:-translate-y-1"
+        >
+          <Activity size={60} className="text-orange-500 mb-3" />
+          <span className="text-lg font-semibold text-gray-800">Progreso</span>
         </div>
       </div>
     </div>

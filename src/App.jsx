@@ -6,6 +6,7 @@ import FichaCliente from "./pages/FichaCliente";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cuotas from "./pages/Cuotas";
+import Progreso from "./pages/Progreso"; 
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/cuotas" element={<Cuotas />} />
+        <Route path="/progreso" element={<Progreso />} />
         <Route
           path="/"
           element={
