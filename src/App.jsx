@@ -5,6 +5,7 @@ import Clientes from "./pages/Clientes";
 import FichaCliente from "./pages/FichaCliente";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Cuotas from "./pages/Cuotas";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Header />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/cuotas" element={<Cuotas />} />
         <Route
           path="/"
           element={
