@@ -15,7 +15,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/cuotas" element={<Cuotas />} />
-        <Route path="/progreso" element={<Progreso />} />
+        <Route path="/progreso/:id" element={<Progreso />} />
         <Route
           path="/"
           element={
@@ -40,6 +40,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/progreso"
+  element={
+    <ProtectedRoute>
+      <Progreso />
+    </ProtectedRoute>
+  }
+/>
+
       </Routes>
     </BrowserRouter>
   );
