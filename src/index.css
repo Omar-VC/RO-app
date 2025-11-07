@@ -5,6 +5,60 @@
 html, body, #root {
   height: 100%;
 }
+
 body {
-  @apply bg-gray-50 text-gray-900 font-sans;
+  background-color: var(--color-fondo); /* fondo general */
+  color: var(--color-texto);
+  @apply font-sans;
+}
+
+/* 🎨 Paleta de colores oscuros y bordó */
+:root {
+  /* ===== Colores base ===== */
+  --color-fondo: #141010;
+  --color-card: #1e0f12;
+  --color-borde: #3a3a3a;
+  --color-texto: #f5f5f5;
+
+  /* ===== Tonos principales ===== */
+  --color-principal: #1c0a0f;    /* Bordó oscuro (identidad principal) */
+  --color-secundario: #a83248;   /* Bordó medio (contraste o hover) */
+  --color-acento: #e94f64;       /* Rosado fuerte (botones, detalles activos) */
+
+  /* ===== Colores complementarios ===== */
+  --color-dorado: #d4af37;       /* Dorado principal */
+  --color-dorado-claro: #f0c94d; /* Dorado más brillante */
+  --color-yaxis:#1c0a0f00;
+}
+
+
+/* 🔹 Efectos y detalles globales */
+* {
+  @apply transition-colors duration-200;
+}
+
+input, select, textarea {
+  background-color: var(--color-card);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 2px var(--color-secundario);
+}
+
+/* 🔹 Scrollbar (opcional, más estético) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-secundario);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-fondo);
 }

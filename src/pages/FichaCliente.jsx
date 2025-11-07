@@ -19,7 +19,7 @@ export default function FichaCliente({ actualizarListaClientes }) {
     cargarCliente();
   }, [id, navigate]);
 
-  if (!cliente) return <div className="p-6">Cargando cliente...</div>;
+  if (!cliente) return <div className="p-6 text-[var(--color-texto)]">Cargando cliente...</div>;
 
   const handleChange = (field, value) => {
     setCliente(prev => ({ ...prev, [field]: value }));
@@ -42,9 +42,11 @@ export default function FichaCliente({ actualizarListaClientes }) {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
-      <div className="max-w-md mx-auto bg-white p-6 rounded shadow space-y-4">
-        <div className="text-2xl font-bold text-center">Ficha del cliente</div>
+    <div className="min-h-screen p-6 bg-[var(--color-fondo)] text-[var(--color-texto)]">
+      <div className="max-w-md mx-auto bg-[var(--color-card)] p-6 rounded-xl shadow-md space-y-4">
+        <div className="text-2xl font-bold text-center mb-4" style={{ color: "var(--color-dorado)" }}>
+          Ficha del cliente
+        </div>
 
         {editando ? (
           <>
@@ -52,52 +54,52 @@ export default function FichaCliente({ actualizarListaClientes }) {
               type="text"
               value={cliente.nombre}
               onChange={(e) => handleChange("nombre", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <input
               type="text"
               value={cliente.apellido}
               onChange={(e) => handleChange("apellido", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <input
               type="number"
               value={cliente.edad}
               onChange={(e) => handleChange("edad", parseInt(e.target.value))}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <textarea
               value={cliente.historialLesiones}
               onChange={(e) => handleChange("historialLesiones", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <input
               type="number"
               value={cliente.peso}
               onChange={(e) => handleChange("peso", parseFloat(e.target.value))}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <input
               type="number"
               value={cliente.altura}
               onChange={(e) => handleChange("altura", parseFloat(e.target.value))}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <input
               type="number"
               value={cliente.diasSemana}
               onChange={(e) => handleChange("diasSemana", parseInt(e.target.value))}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <input
               type="date"
               value={cliente.fechaInicio}
               onChange={(e) => handleChange("fechaInicio", e.target.value)}
-              className="border p-2 rounded w-full"
+              className="w-full p-2 rounded border border-[var(--color-borde)] bg-[var(--color-fondo)] text-[var(--color-texto)]"
             />
             <div className="flex justify-between mt-2">
-              <UIButton onClick={handleGuardar}>Guardar</UIButton>
-              <UIButton onClick={() => setEditando(false)}>Cancelar</UIButton>
+              <UIButton variant="gold" onClick={handleGuardar}>Guardar</UIButton>
+              <UIButton variant="primary" onClick={() => setEditando(false)}>Cancelar</UIButton>
             </div>
           </>
         ) : (
@@ -120,8 +122,8 @@ export default function FichaCliente({ actualizarListaClientes }) {
             </div>
 
             <div className="flex justify-between mt-4">
-              <UIButton onClick={() => setEditando(true)}>Editar</UIButton>
-              <UIButton onClick={handleEliminar} className="bg-red-500 hover:bg-red-600">Eliminar</UIButton>
+              <UIButton variant="gold" onClick={() => setEditando(true)}>Editar</UIButton>
+              <UIButton variant="danger" onClick={handleEliminar}>Eliminar</UIButton>
             </div>
           </>
         )}

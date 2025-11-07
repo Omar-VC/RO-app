@@ -1,4 +1,3 @@
-// src/pages/Cuotas.jsx
 import { useEffect, useState } from "react";
 import { FaMoneyBillWave, FaCheckCircle, FaEdit, FaTrash } from "react-icons/fa";
 import UIButton from "../components/UIButton";
@@ -10,7 +9,6 @@ export default function Cuotas() {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Form nuevo/editar
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
@@ -35,7 +33,7 @@ export default function Cuotas() {
   }, []);
 
   const abrirFormNuevo = async () => {
-    await loadData(); // 👈 Asegura tener los clientes actualizados
+    await loadData();
     setEditingId(null);
     setForm({
       clienteId: "",
@@ -67,7 +65,6 @@ export default function Cuotas() {
       return;
     }
 
-    // Asegurar clienteNombre sincronizado
     const clienteObj = clientes.find(c => c.id === form.clienteId);
     const payload = { ...form, clienteNombre: clienteObj ? `${clienteObj.nombre} ${clienteObj.apellido}` : form.clienteNombre };
 
@@ -93,21 +90,26 @@ export default function Cuotas() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen p-6" style={{ backgroundColor: "var(--color-fondo)", color: "var(--color-texto)" }}>
+      <div className="max-w-5xl mx-auto">
+        {/* Encabezado */}
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <FaMoneyBillWave className="text-green-600" size={28} />
-            <h2 className="text-2xl font-bold">Cuotas</h2>
+            <FaMoneyBillWave className="text-[var(--color-acento)]" size={28} />
+            <h2 className="text-3xl font-bold">Cuotas</h2>
           </div>
-          <UIButton onClick={abrirFormNuevo}>+ Nueva cuota</UIButton>
+          <UIButton variant="gold" onClick={abrirFormNuevo}>
+            + Nueva cuota
+          </UIButton>
+
         </div>
 
+        {/* Formulario */}
         {showForm && (
-          <div className="bg-white p-4 rounded shadow mb-6">
+          <div className="p-4 rounded-lg shadow-md mb-6" style={{ backgroundColor: "var(--color-card)" }}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <select
-                className="border p-2 rounded"
+                className="p-2 rounded bg-transparent border border-gray-500 text-[var(--color-texto)]"
                 value={form.clienteId}
                 onChange={(e) => {
                   const id = e.target.value;
@@ -120,7 +122,7 @@ export default function Cuotas() {
               </select>
 
               <input
-                className="border p-2 rounded"
+                className="p-2 rounded bg-transparent border border-gray-500 text-[var(--color-texto)] placeholder-gray-400"
                 placeholder="Mes (ej: Noviembre)"
                 value={form.mes}
                 onChange={(e) => setForm(prev => ({ ...prev, mes: e.target.value }))}
@@ -128,7 +130,7 @@ export default function Cuotas() {
 
               <input
                 type="number"
-                className="border p-2 rounded"
+                className="p-2 rounded bg-transparent border border-gray-500 text-[var(--color-texto)]"
                 value={form.anio}
                 onChange={(e) => setForm(prev => ({ ...prev, anio: Number(e.target.value) }))}
               />
@@ -136,13 +138,13 @@ export default function Cuotas() {
 
             <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
               <input
-                className="border p-2 rounded"
+                className="p-2 rounded bg-transparent border border-gray-500 text-[var(--color-texto)] placeholder-gray-400"
                 placeholder="Monto"
                 value={form.monto}
                 onChange={(e) => setForm(prev => ({ ...prev, monto: e.target.value }))}
               />
               <select
-                className="border p-2 rounded"
+                className="p-2 rounded bg-transparent border border-gray-500 text-[var(--color-texto)]"
                 value={form.estado}
                 onChange={(e) => setForm(prev => ({ ...prev, estado: e.target.value }))}
               >
@@ -150,20 +152,21 @@ export default function Cuotas() {
                 <option value="Pagado">Pagado</option>
               </select>
               <div className="flex gap-2">
-                <UIButton onClick={handleSubmit}>{editingId ? "Guardar cambios" : "Crear cuota"}</UIButton>
+                <UIButton onClick={handleSubmit}>{editingId ? "Guardar" : "Crear"}</UIButton>
                 <UIButton onClick={() => setShowForm(false)}>Cancelar</UIButton>
               </div>
             </div>
           </div>
         )}
 
+        {/* Tabla */}
         {loading ? (
           <div>Cargando cuotas...</div>
         ) : (
-          <div className="bg-white rounded shadow overflow-x-auto">
-            <table className="min-w-full table-auto">
+          <div className="rounded-lg shadow-md overflow-x-auto" style={{ backgroundColor: "var(--color-card)" }}>
+            <table className="min-w-full table-auto text-left">
               <thead>
-                <tr className="bg-gray-100 text-left">
+                <tr style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
                   <th className="p-3">Cliente</th>
                   <th className="p-3">Mes</th>
                   <th className="p-3">Año</th>
@@ -174,24 +177,26 @@ export default function Cuotas() {
               </thead>
               <tbody>
                 {cuotas.map(cuota => (
-                  <tr key={cuota.id} className="border-t">
+                  <tr key={cuota.id} className="border-t border-gray-700">
                     <td className="p-3">{cuota.clienteNombre}</td>
                     <td className="p-3">{cuota.mes}</td>
                     <td className="p-3">{cuota.anio}</td>
                     <td className="p-3">${cuota.monto}</td>
                     <td className="p-3">
-                      <span className={cuota.estado === "Pagado" ? "text-green-600" : "text-red-600"}>{cuota.estado}</span>
+                      <span className={cuota.estado === "Pagado" ? "text-green-400" : "text-red-400"}>
+                        {cuota.estado}
+                      </span>
                     </td>
                     <td className="p-3">
                       <div className="flex gap-2">
-                        <button onClick={() => handleMarcarPagado(cuota.id)} title="Marcar pagado" className="p-2 rounded bg-green-50 hover:bg-green-100">
-                          <FaCheckCircle className="text-green-600" />
+                        <button onClick={() => handleMarcarPagado(cuota.id)} title="Marcar pagado" className="p-2 rounded hover:bg-green-900/40">
+                          <FaCheckCircle className="text-green-400" />
                         </button>
-                        <button onClick={() => abrirEditar(cuota)} title="Editar" className="p-2 rounded bg-blue-50 hover:bg-blue-100">
-                          <FaEdit className="text-blue-600" />
+                        <button onClick={() => abrirEditar(cuota)} title="Editar" className="p-2 rounded hover:bg-blue-900/40">
+                          <FaEdit className="text-blue-400" />
                         </button>
-                        <button onClick={() => handleEliminar(cuota.id)} title="Eliminar" className="p-2 rounded bg-red-50 hover:bg-red-100">
-                          <FaTrash className="text-red-600" />
+                        <button onClick={() => handleEliminar(cuota.id)} title="Eliminar" className="p-2 rounded hover:bg-red-900/40">
+                          <FaTrash className="text-red-400" />
                         </button>
                       </div>
                     </td>
@@ -199,7 +204,7 @@ export default function Cuotas() {
                 ))}
                 {cuotas.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="p-4 text-center text-gray-500">No hay cuotas registradas</td>
+                    <td colSpan="6" className="p-4 text-center text-gray-400">No hay cuotas registradas</td>
                   </tr>
                 )}
               </tbody>

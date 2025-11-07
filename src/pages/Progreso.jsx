@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { ArrowLeft, PlusCircle, Trash2 } from "lucide-react";
 import Rendimiento from "../components/Rendimiento";
+import UIButton from "../components/UIButton";
 
 export default function Progreso() {
   const [clientes, setClientes] = useState([]);
@@ -20,7 +21,6 @@ export default function Progreso() {
   const [descripcion, setDescripcion] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Obtener todos los clientes
   useEffect(() => {
     const fetchClientes = async () => {
       try {
@@ -39,7 +39,6 @@ export default function Progreso() {
     fetchClientes();
   }, []);
 
-  // Cargar sesiones de un cliente
   const fetchSesiones = async (clienteId) => {
     const q = query(collection(db, "sesiones"), where("clienteId", "==", clienteId));
     const snapshot = await getDocs(q);
@@ -47,13 +46,11 @@ export default function Progreso() {
     setSesiones(lista);
   };
 
-  // Seleccionar cliente
   const seleccionarCliente = (cliente) => {
     setClienteSeleccionado(cliente);
     fetchSesiones(cliente.id);
   };
 
-  // Agregar sesión
   const agregarSesion = async () => {
     if (!titulo.trim() || !descripcion.trim()) return;
     try {
@@ -71,7 +68,6 @@ export default function Progreso() {
     }
   };
 
-  // Eliminar sesión
   const eliminarSesion = async (id) => {
     try {
       await deleteDoc(doc(db, "sesiones", id));
@@ -81,14 +77,15 @@ export default function Progreso() {
     }
   };
 
-  if (loading) return <p className="text-center mt-10">Cargando clientes...</p>;
+  if (loading)
+    return <p className="text-center mt-10 text-[var(--color-texto)]">Cargando clientes...</p>;
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen p-6 bg-[var(--color-fondo)] text-[var(--color-texto)]">
       {!clienteSeleccionado ? (
         <>
-          <h1 className="text-3xl font-bold mb-6 text-blue-600">Progreso</h1>
-          <p className="text-gray-600 mb-4">
+          <h1 className="text-3xl font-bold mb-6 text-[var(--color-dorado)]">Progreso</h1>
+          <p className="text-gray-400 mb-4">
             Seleccioná un cliente para ver su progreso y sesiones.
           </p>
 
@@ -96,43 +93,36 @@ export default function Progreso() {
             {clientes.map((cliente) => (
               <div
                 key={cliente.id}
-                className="p-4 bg-white rounded-xl shadow-md flex justify-between items-center hover:shadow-lg transition"
+                className="p-4 bg-[var(--color-card)] rounded-xl shadow-md flex justify-between items-center hover:shadow-[0_0_15px_var(--color-dorado)] transition transform hover:-translate-y-1 cursor-pointer"
               >
                 <div>
-                  <p className="font-semibold text-lg">
-                    {cliente.nombre} {cliente.apellido}
-                  </p>
-                  <p className="text-gray-500 text-sm">Edad: {cliente.edad}</p>
+                  <p className="font-semibold text-lg">{cliente.nombre} {cliente.apellido}</p>
+                  <p className="text-gray-400 text-sm">Edad: {cliente.edad}</p>
                 </div>
 
-                <button
-                  onClick={() => seleccionarCliente(cliente)}
-                  className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
-                >
+                <UIButton variant="gold" onClick={() => seleccionarCliente(cliente)}>
                   Ver progreso
-                </button>
+                </UIButton>
               </div>
             ))}
           </div>
         </>
       ) : (
         <>
-          {/* Encabezado del cliente */}
           <div className="flex items-center gap-3 mb-6">
             <button
               onClick={() => setClienteSeleccionado(null)}
-              className="flex items-center gap-1 text-gray-600 hover:text-blue-600 transition"
+              className="flex items-center gap-1 text-gray-400 hover:text-[var(--color-dorado)] transition"
             >
               <ArrowLeft size={18} /> Volver
             </button>
-            <h2 className="text-2xl font-bold text-blue-600">
+            <h2 className="text-2xl font-bold text-[var(--color-dorado)]">
               {clienteSeleccionado.nombre} {clienteSeleccionado.apellido}
             </h2>
           </div>
 
-          {/* Sección de sesiones de entrenamiento */}
-          <div className="bg-white p-4 rounded-xl shadow-md mb-6">
-            <h3 className="text-lg font-semibold mb-3 text-gray-700">
+          <div className="bg-[var(--color-card)] p-4 rounded-xl shadow-md mb-6">
+            <h3 className="text-lg font-semibold mb-3 text-[var(--color-dorado)]">
               Añadir sesión de entrenamiento
             </h3>
 
@@ -142,43 +132,37 @@ export default function Progreso() {
                 value={titulo}
                 onChange={(e) => setTitulo(e.target.value)}
                 placeholder="Título de la sesión"
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-[var(--color-borde)] rounded-lg px-3 py-2 bg-[var(--color-fondo)] text-[var(--color-texto)]"
               />
-
               <textarea
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
                 placeholder="Descripción, ejercicios, repeticiones, bloques, etc."
-                className="w-full border rounded-lg px-3 py-2 h-28 resize-none"
+                className="w-full border border-[var(--color-borde)] rounded-lg px-3 py-2 h-28 resize-none bg-[var(--color-fondo)] text-[var(--color-texto)]"
               />
-
-              <button
-                onClick={agregarSesion}
-                className="flex items-center gap-1 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition"
-              >
+              <UIButton variant="gold" onClick={agregarSesion}>
                 <PlusCircle size={18} /> Añadir sesión
-              </button>
+              </UIButton>
             </div>
           </div>
 
-          {/* Historial de sesiones */}
-          <div className="bg-white p-4 rounded-xl shadow-md mb-6">
-            <h3 className="text-lg font-semibold mb-3 text-gray-700">
+          <div className="bg-[var(--color-card)] p-4 rounded-xl shadow-md mb-6">
+            <h3 className="text-lg font-semibold mb-3 text-[var(--color-dorado)]">
               Historial de sesiones
             </h3>
             {sesiones.length === 0 ? (
-              <p className="text-gray-500">No hay sesiones registradas.</p>
+              <p className="text-gray-400">No hay sesiones registradas.</p>
             ) : (
               <ul className="space-y-3">
                 {sesiones.map((sesion) => (
                   <li
                     key={sesion.id}
-                    className="flex justify-between items-start bg-gray-50 p-3 rounded-lg"
+                    className="flex justify-between items-start bg-[var(--color-fondo)] p-3 rounded-lg shadow-sm"
                   >
                     <div>
-                      <p className="font-semibold text-blue-600">{sesion.titulo}</p>
-                      <p className="text-gray-700 whitespace-pre-line">{sesion.descripcion}</p>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="font-semibold text-[var(--color-dorado)]">{sesion.titulo}</p>
+                      <p className="text-[var(--color-texto)] whitespace-pre-line">{sesion.descripcion}</p>
+                      <p className="text-sm text-gray-400 mt-1">
                         {new Date(sesion.fecha).toLocaleString("es-AR")}
                       </p>
                     </div>
@@ -194,8 +178,7 @@ export default function Progreso() {
             )}
           </div>
 
-          {/* Sección de rendimiento */}
-          <div className="bg-white p-4 rounded-xl shadow-md">
+          <div className="bg-[var(--color-card)] p-4 rounded-xl shadow-md">
             <Rendimiento clienteId={clienteSeleccionado.id} />
           </div>
         </>

@@ -1,7 +1,9 @@
+// src/pages/Clientes.jsx
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
+import UIButton from "../components/UIButton";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
@@ -24,33 +26,62 @@ export default function Clientes() {
     obtenerClientes();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Cargando clientes...</p>;
+  if (loading)
+    return (
+      <p className="text-center mt-10 text-[var(--color-texto)]">
+        Cargando clientes...
+      </p>
+    );
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 text-blue-600">Clientes</h1>
+    <div className="p-6 min-h-screen bg-[var(--color-fondo)]">
+      <h1
+        className="text-3xl font-bold mb-6"
+        style={{ color: "var(--color-dorado)" }}
+      >
+        Clientes
+      </h1>
 
       <div className="grid gap-4">
         {clientes.map((cliente) => (
           <div
             key={cliente.id}
-            className="p-4 bg-white rounded-xl shadow-md flex justify-between items-center hover:shadow-lg transition"
+            style={{ backgroundColor: "var(--color-card)" }}
+            className="p-4 rounded-xl shadow-md flex justify-between items-center
+                       transition transform hover:-translate-y-1 hover:shadow-[0_0_15px_var(--color-dorado)] border border-transparent"
           >
             <div>
-              <p className="font-semibold text-lg">
+              <p
+                className="font-semibold text-lg"
+                style={{ color: "var(--color-texto)" }}
+              >
                 {cliente.nombre} {cliente.apellido}
               </p>
-              <p className="text-gray-500 text-sm">Edad: {cliente.edad}</p>
+              <p
+                className="text-sm"
+                style={{ color: "var(--color-texto)" }}
+              >
+                Edad: {cliente.edad}
+              </p>
             </div>
 
-            <button
+            <UIButton
               onClick={() => navigate(`/clientes/${cliente.id}`)}
-              className="flex items-center gap-2 bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-300 transition"
+              variant="gold"
             >
               Ficha
-            </button>
+            </UIButton>
           </div>
         ))}
+
+        {clientes.length === 0 && (
+          <p
+            className="text-center mt-4"
+            style={{ color: "var(--color-texto)" }}
+          >
+            No hay clientes registrados
+          </p>
+        )}
       </div>
     </div>
   );

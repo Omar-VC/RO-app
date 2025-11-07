@@ -8,6 +8,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Cuotas from "./pages/Cuotas";
 import Progreso from "./pages/Progreso"; 
 
+
+
 export default function App() {
   return (
     <BrowserRouter>
