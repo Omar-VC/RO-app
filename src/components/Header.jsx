@@ -1,7 +1,19 @@
+// src/components/Header.jsx
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
 
   return (
     <header className="bg-[var(--color-principal)] text-white shadow-md sticky top-0 z-50">
@@ -35,7 +47,7 @@ export default function Header() {
             Progreso
           </button>
           <button
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
             className="bg-[var(--color-secundario)] text-white px-3 py-1 rounded-md hover:bg-[#8a283c] transition-colors"
           >
             Salir

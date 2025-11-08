@@ -1,15 +1,11 @@
+// src/components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
-import { getAuth } from "firebase/auth";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute({ children }) {
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const { currentUser } = useAuth();
 
-  // Si no hay usuario logueado, redirigir al login
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  if (currentUser === undefined) return null; // Espera a que cargue el estado
 
-  // Si hay usuario, renderizar el contenido protegido
-  return children;
+  return currentUser ? children : <Navigate to="/login" replace />;
 }

@@ -7,22 +7,34 @@ import { auth } from "../firebase/config";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    // Evita doble clic
+    if (loading) return;
+
+    setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/"); // Redirige si el login fue exitoso
     } catch (error) {
-      alert("Error al iniciar sesión: " + error.message);
+      console.error("Error al iniciar sesión:", error);
+      alert("⚠️ Error: verifica tu email o contraseña.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
       className="min-h-screen flex items-center justify-center"
-      style={{ backgroundColor: "var(--color-fondo)", color: "var(--color-texto)" }}
+      style={{
+        backgroundColor: "var(--color-fondo)",
+        color: "var(--color-texto)",
+      }}
     >
       <div
         className="w-full max-w-sm p-8 rounded-2xl shadow-lg border"
@@ -44,7 +56,8 @@ export default function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="p-3 mb-4 rounded-md border focus:outline-none"
+            required
+            className="p-3 mb-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-[var(--color-dorado)]"
             style={{
               backgroundColor: "var(--color-fondo)",
               color: "var(--color-texto)",
@@ -56,7 +69,8 @@ export default function Login() {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="p-3 mb-6 rounded-md border focus:outline-none"
+            required
+            className="p-3 mb-6 rounded-md border focus:outline-none focus:ring-2 focus:ring-[var(--color-dorado)]"
             style={{
               backgroundColor: "var(--color-fondo)",
               color: "var(--color-texto)",
@@ -64,8 +78,8 @@ export default function Login() {
             }}
           />
 
-          <UIButton type="submit" variant="gold">
-            Ingresar
+          <UIButton type="submit" variant="gold" disabled={loading}>
+            {loading ? "Ingresando..." : "Ingresar"}
           </UIButton>
         </form>
       </div>
