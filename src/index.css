@@ -29,6 +29,8 @@ body {
   --color-dorado: #d4af37;       /* Dorado principal */
   --color-dorado-claro: #f0c94d; /* Dorado más brillante */
   --color-yaxis:#1c0a0f00;
+
+  --color-header: #1c0113;
 }
 
 
