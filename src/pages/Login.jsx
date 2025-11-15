@@ -1,10 +1,12 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UIButton from "../components/UIButton";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { auth, db } from "../firebase/config";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,12 +22,34 @@ export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
 
+  // === LOGIN ===
   const handleLogin = async (e) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      // Iniciar sesión con Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Buscar datos del usuario en Firestore
+      const userDoc = await getDoc(doc(db, "usuarios", uid));
+
+      if (!userDoc.exists()) {
+        alert("⚠️ Tu cuenta no está registrada correctamente en la base de datos.");
+        return;
+      }
+
+      const userData = userDoc.data();
+
+      // 🔒 Verificar estado
+      if (userData.estado !== "aprobado") {
+        alert("⚠️ Tu cuenta aún no fue aprobada por el administrador.");
+        return;
+      }
+
+      // ✅ Si todo está bien, entrar
       navigate("/");
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
@@ -35,35 +59,54 @@ export default function Login() {
     }
   };
 
+  // === REGISTRO ===
   const handleRegister = async (e) => {
-    e.preventDefault();
-    if (loading) return;
-    setLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        registerData.email,
-        registerData.password
-      );
-      const user = userCredential.user;
+  e.preventDefault();
+  if (loading) return;
+  setLoading(true);
 
-      await setDoc(doc(db, "usuarios", user.uid), {
-        nombre: registerData.nombre,
-        apellido: registerData.apellido,
-        telefono: registerData.telefono,
-        email: registerData.email,
-        rol: "cliente", // Rol por defecto
-      });
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      registerData.email,
+      registerData.password
+    );
+    const user = userCredential.user;
 
-      alert("✅ Cuenta creada correctamente.");
-      setIsRegistering(false);
-    } catch (error) {
-      console.error("Error al registrar:", error);
-      alert("⚠️ No se pudo crear la cuenta. Intenta de nuevo.");
-    } finally {
-      setLoading(false);
+    await setDoc(doc(db, "usuarios", user.uid), {
+      nombre: registerData.nombre,
+      apellido: registerData.apellido,
+      telefono: registerData.telefono,
+      email: registerData.email,
+      rol: "cliente", // Rol por defecto
+      estado: "pendiente", // 🔒 No puede ingresar hasta ser aprobado
+      creadoEn: new Date().toISOString(),
+    });
+
+    alert("✅ Registro enviado. Esperá la aprobación del administrador.");
+    setIsRegistering(false);
+  } catch (error) {
+    console.error("Error al registrar:", error);
+
+    // Manejo de errores específicos
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        alert("⚠️ Este correo ya está registrado. Probá con otro email.");
+        break;
+      case "auth/invalid-email":
+        alert("⚠️ El correo ingresado no es válido.");
+        break;
+      case "auth/weak-password":
+        alert("⚠️ La contraseña es demasiado débil. Usá al menos 6 caracteres.");
+        break;
+      default:
+        alert("⚠️ No se pudo crear la cuenta. Intenta de nuevo.");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div

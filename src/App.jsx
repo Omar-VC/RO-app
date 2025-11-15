@@ -10,6 +10,7 @@ import Register from "./pages/Register"; // 👈 importamos la nueva página
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Aprobaciones from "./pages/Aprobaciones";
+import AgregarCliente from "./pages/AgregarCliente";
 
 
 function AppContent() {
@@ -26,6 +27,8 @@ function AppContent() {
         {/* 🔓 Rutas públicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} /> {/* 👈 nueva ruta */}
+        <Route path="/clientes/agregar" element={<AgregarCliente />} />
+
 
         {/* 🔒 Rutas protegidas */}
         <Route

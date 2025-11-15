@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { obtenerUsuariosPendientes, aprobarUsuario, rechazarUsuario } from "../firebase/usuarios";
+import { agregarCliente } from "../firebase/clientes"; // 🔥 IMPORTANTE
 import UIButton from "../components/UIButton";
 
 export default function Aprobaciones() {
@@ -13,10 +14,21 @@ export default function Aprobaciones() {
     setCargando(false);
   };
 
-  const handleAprobar = async (id) => {
+  const handleAprobar = async (id, usuarioData) => {
     if (window.confirm("¿Aprobar este usuario?")) {
       await aprobarUsuario(id);
-      alert("Usuario aprobado correctamente.");
+
+      // 🔥 Crear cliente automáticamente
+      await agregarCliente({
+        nombre: usuarioData.nombre,
+        apellido: usuarioData.apellido,
+        email: usuarioData.email,
+        telefono: usuarioData.telefono ?? "",
+        aprobado: true,
+        creado: new Date(),
+      });
+
+      alert("Usuario aprobado y añadido como cliente.");
       cargarUsuarios();
     }
   };
@@ -66,12 +78,14 @@ export default function Aprobaciones() {
               <div>
                 <p><strong>Nombre:</strong> {user.nombre}</p>
                 <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Celular:</strong> {user.celular}</p>
+                <p><strong>Celular:</strong> {user.telefono}</p>
               </div>
+
               <div className="flex gap-2">
-                <UIButton variant="gold" onClick={() => handleAprobar(user.id)}>
+                <UIButton variant="gold" onClick={() => handleAprobar(user.id, user)}>
                   Aprobar
                 </UIButton>
+
                 <UIButton variant="dark" onClick={() => handleRechazar(user.id)}>
                   Rechazar
                 </UIButton>

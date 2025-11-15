@@ -15,13 +15,18 @@ import {
 export async function crearUsuario(usuario) {
   try {
     const usuarioRef = doc(db, "usuarios", usuario.uid);
-    await setDoc(usuarioRef, usuario);
-    console.log("✅ Usuario guardado correctamente en Firestore");
+    await setDoc(usuarioRef, {
+      ...usuario,
+      estado: "pendiente",  // 🔹 se agrega este campo
+      rol: "cliente"         // 🔹 si querés, fijamos también el rol base
+    });
+    console.log("✅ Usuario guardado correctamente en Firestore con estado pendiente");
   } catch (error) {
     console.error("❌ Error al guardar usuario en Firestore:", error);
     throw error;
   }
 }
+
 
 // Obtener usuarios pendientes
 export async function obtenerUsuariosPendientes() {
@@ -39,12 +44,13 @@ export async function obtenerUsuariosPendientes() {
 export async function aprobarUsuario(uid) {
   try {
     const usuarioRef = doc(db, "usuarios", uid);
-    await updateDoc(usuarioRef, { estado: "activo", rol: "usuario" });
+    await updateDoc(usuarioRef, { estado: "aprobado", rol: "cliente" });
     console.log(`✅ Usuario ${uid} aprobado`);
   } catch (error) {
     console.error("❌ Error al aprobar usuario:", error);
   }
 }
+
 
 // Rechazar usuario
 export async function rechazarUsuario(uid) {

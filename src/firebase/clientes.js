@@ -1,9 +1,15 @@
-import { collection, addDoc, doc, getDoc, getDocs, updateDoc, deleteDoc } from "firebase/firestore";
+import { 
+  collection, 
+  addDoc, 
+  doc, 
+  getDoc, 
+  getDocs, 
+  updateDoc, 
+  deleteDoc 
+} from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
-
-
-// Obtener todos los clientes
+// Obtener todos los clientes (los aprobados que ya fueron añadidos a la colección clientes)
 export async function obtenerClientes() {
   const querySnapshot = await getDocs(collection(db, "clientes"));
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -17,7 +23,7 @@ export async function obtenerClientePorId(id) {
   return null;
 }
 
-// Agregar cliente (retorna ID generado)
+// Agregar cliente (cuando un usuario se aprueba)
 export async function agregarCliente(clienteData) {
   const docRef = await addDoc(collection(db, "clientes"), clienteData);
   return docRef.id;

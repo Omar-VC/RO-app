@@ -1,3 +1,4 @@
+
 // src/pages/Clientes.jsx
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -35,12 +36,22 @@ export default function Clientes() {
 
   return (
     <div className="p-6 min-h-screen bg-[var(--color-fondo)]">
-      <h1
-        className="text-3xl font-bold mb-6"
-        style={{ color: "var(--color-dorado)" }}
-      >
-        Clientes
-      </h1>
+      
+      <div className="flex justify-between items-center mb-6">
+        <h1
+          className="text-3xl font-bold"
+          style={{ color: "var(--color-dorado)" }}
+        >
+          Clientes
+        </h1>
+
+        <UIButton
+          variant="gold"
+          onClick={() => navigate("/clientes/agregar")}
+        >
+          Agregar Cliente
+        </UIButton>
+      </div>
 
       <div className="grid gap-4">
         {clientes.map((cliente) => (
@@ -51,16 +62,10 @@ export default function Clientes() {
                        transition transform hover:-translate-y-1 hover:shadow-[0_0_15px_var(--color-dorado)] border border-transparent"
           >
             <div>
-              <p
-                className="font-semibold text-lg"
-                style={{ color: "var(--color-texto)" }}
-              >
+              <p className="font-semibold text-lg" style={{ color: "var(--color-texto)" }}>
                 {cliente.nombre} {cliente.apellido}
               </p>
-              <p
-                className="text-sm"
-                style={{ color: "var(--color-texto)" }}
-              >
+              <p className="text-sm" style={{ color: "var(--color-texto)" }}>
                 Edad: {cliente.edad}
               </p>
             </div>
@@ -75,10 +80,7 @@ export default function Clientes() {
         ))}
 
         {clientes.length === 0 && (
-          <p
-            className="text-center mt-4"
-            style={{ color: "var(--color-texto)" }}
-          >
+          <p className="text-center mt-4" style={{ color: "var(--color-texto)" }}>
             No hay clientes registrados
           </p>
         )}

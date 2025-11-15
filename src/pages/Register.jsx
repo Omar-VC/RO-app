@@ -10,24 +10,24 @@ export default function Register() {
   const [celular, setCelular] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
 
     // Validación de número de celular
     if (!/^[0-9]{8,15}$/.test(celular)) {
       alert("Por favor ingrese un número de celular válido (solo números).");
+      setLoading(false);
       return;
     }
 
     try {
       // Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
       // Guardar datos adicionales en Firestore
       await crearUsuario({
@@ -36,36 +36,45 @@ export default function Register() {
         celular,
         email,
         rol: "cliente",
-        estado: "pendiente", // 🔒 El admin deberá aprobarlo
+        estado: "pendiente", // 🔒 Admin debe aprobarlo
         creadoEn: new Date().toISOString(),
       });
 
-      alert("Registro enviado. Tu cuenta será activada por el administrador.");
+      alert("✅ Registro enviado. Esperá la aprobación del administrador.");
       navigate("/login");
+
     } catch (error) {
-      alert("Error al registrar usuario: " + error.message);
+      console.error("Error al registrar usuario:", error);
+
+      // Mostrar mensaje de error específico de Firebase
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          alert("⚠️ Este email ya está en uso. Intenta con otro.");
+          break;
+        case "auth/invalid-email":
+          alert("⚠️ Email inválido. Verifica el formato.");
+          break;
+        case "auth/weak-password":
+          alert("⚠️ La contraseña es muy débil. Debe tener al menos 6 caracteres.");
+          break;
+        default:
+          alert("⚠️ No se pudo crear la cuenta. Error: " + error.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
       className="min-h-screen flex items-center justify-center"
-      style={{
-        backgroundColor: "var(--color-fondo)",
-        color: "var(--color-texto)",
-      }}
+      style={{ backgroundColor: "var(--color-fondo)", color: "var(--color-texto)" }}
     >
       <div
         className="w-full max-w-sm p-8 rounded-2xl shadow-lg border"
-        style={{
-          backgroundColor: "var(--color-card)",
-          borderColor: "var(--color-borde)",
-        }}
+        style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-borde)" }}
       >
-        <div
-          className="text-center text-4xl font-semibold tracking-widest mb-8"
-          style={{ color: "var(--color-dorado)" }}
-        >
+        <div className="text-center text-4xl font-semibold tracking-widest mb-8" style={{ color: "var(--color-dorado)" }}>
           Crear cuenta
         </div>
 
@@ -76,11 +85,7 @@ export default function Register() {
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             className="p-3 mb-4 rounded-md border focus:outline-none"
-            style={{
-              backgroundColor: "var(--color-fondo)",
-              color: "var(--color-texto)",
-              borderColor: "var(--color-borde)",
-            }}
+            style={{ backgroundColor: "var(--color-fondo)", color: "var(--color-texto)", borderColor: "var(--color-borde)" }}
             required
           />
 
@@ -90,11 +95,7 @@ export default function Register() {
             value={celular}
             onChange={(e) => setCelular(e.target.value)}
             className="p-3 mb-4 rounded-md border focus:outline-none"
-            style={{
-              backgroundColor: "var(--color-fondo)",
-              color: "var(--color-texto)",
-              borderColor: "var(--color-borde)",
-            }}
+            style={{ backgroundColor: "var(--color-fondo)", color: "var(--color-texto)", borderColor: "var(--color-borde)" }}
             required
           />
 
@@ -104,11 +105,7 @@ export default function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="p-3 mb-4 rounded-md border focus:outline-none"
-            style={{
-              backgroundColor: "var(--color-fondo)",
-              color: "var(--color-texto)",
-              borderColor: "var(--color-borde)",
-            }}
+            style={{ backgroundColor: "var(--color-fondo)", color: "var(--color-texto)", borderColor: "var(--color-borde)" }}
             required
           />
 
@@ -118,16 +115,12 @@ export default function Register() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="p-3 mb-6 rounded-md border focus:outline-none"
-            style={{
-              backgroundColor: "var(--color-fondo)",
-              color: "var(--color-texto)",
-              borderColor: "var(--color-borde)",
-            }}
+            style={{ backgroundColor: "var(--color-fondo)", color: "var(--color-texto)", borderColor: "var(--color-borde)" }}
             required
           />
 
-          <UIButton type="submit" variant="gold">
-            Registrarme
+          <UIButton type="submit" variant="gold" disabled={loading}>
+            {loading ? "Registrando..." : "Registrarme"}
           </UIButton>
 
           <p className="text-center mt-4 text-sm">
