@@ -1,3 +1,4 @@
+// src/pages/Progreso.jsx
 import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import {
@@ -8,61 +9,73 @@ import {
   doc,
   query,
   where,
+  getDoc,
 } from "firebase/firestore";
 import { ArrowLeft, PlusCircle, Trash2 } from "lucide-react";
 import Rendimiento from "../components/Rendimiento";
 import UIButton from "../components/UIButton";
+import { useParams } from "react-router-dom";
 
-export default function Progreso() {
-  const [clientes, setClientes] = useState([]);
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+// 👇 Importamos el contexto
+import { useCliente } from "../context/ClienteContext";
+
+export default function Progreso({ cliente: clienteProp, volver }) {
+  const { id } = useParams(); // ← ID desde URL
+  const { clienteSeleccionado } = useCliente(); // 👈 obtenemos cliente global
+
+  // 👇 Inicializamos con prop, contexto o null
+  const [cliente, setCliente] = useState(clienteProp || clienteSeleccionado || null);
+
   const [sesiones, setSesiones] = useState([]);
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [loading, setLoading] = useState(true);
 
+  // 👉 Si no viene cliente como prop ni contexto, lo buscamos por ID
   useEffect(() => {
-    const fetchClientes = async () => {
+    if (clienteProp || clienteSeleccionado) return;
+
+    const fetchCliente = async () => {
       try {
-        const snapshot = await getDocs(collection(db, "clientes"));
-        const lista = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setClientes(lista);
+        const ref = doc(db, "clientes", id);
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) {
+          setCliente({ id: snap.id, ...snap.data() });
+        }
       } catch (error) {
-        console.error("Error al obtener clientes:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error cargando cliente:", error);
       }
     };
-    fetchClientes();
-  }, []);
 
-  const fetchSesiones = async (clienteId) => {
-    const q = query(collection(db, "sesiones"), where("clienteId", "==", clienteId));
+    if (id) fetchCliente();
+  }, [id, clienteProp, clienteSeleccionado]);
+
+  // ----------------- SESIONES -----------------
+  const fetchSesiones = async () => {
+    if (!cliente?.id) return;
+    const q = query(collection(db, "sesiones"), where("clienteId", "==", cliente.id));
     const snapshot = await getDocs(q);
     const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     setSesiones(lista);
   };
 
-  const seleccionarCliente = (cliente) => {
-    setClienteSeleccionado(cliente);
-    fetchSesiones(cliente.id);
-  };
+  useEffect(() => {
+    if (!cliente?.id) return;
+    fetchSesiones();
+  }, [cliente?.id]);
 
   const agregarSesion = async () => {
     if (!titulo.trim() || !descripcion.trim()) return;
     try {
       await addDoc(collection(db, "sesiones"), {
-        clienteId: clienteSeleccionado.id,
+        clienteId: cliente.id,
         titulo,
         descripcion,
         fecha: new Date().toISOString(),
       });
       setTitulo("");
       setDescripcion("");
-      fetchSesiones(clienteSeleccionado.id);
+      fetchSesiones();
     } catch (error) {
       console.error("Error al agregar sesión:", error);
     }
@@ -71,56 +84,36 @@ export default function Progreso() {
   const eliminarSesion = async (id) => {
     try {
       await deleteDoc(doc(db, "sesiones", id));
-      fetchSesiones(clienteSeleccionado.id);
+      fetchSesiones();
     } catch (error) {
       console.error("Error al eliminar sesión:", error);
     }
   };
 
-  if (loading)
-    return <p className="text-center mt-10 text-[var(--color-texto)]">Cargando clientes...</p>;
-
   return (
     <div className="min-h-screen p-6 bg-[var(--color-fondo)] text-[var(--color-texto)]">
-      {!clienteSeleccionado ? (
-        <>
-          <h1 className="text-3xl font-bold mb-6 text-[var(--color-dorado)]">Progreso</h1>
-          <p className="text-gray-400 mb-4">
-            Seleccioná un cliente para ver su progreso y sesiones.
-          </p>
-
-          <div className="grid gap-4">
-            {clientes.map((cliente) => (
-              <div
-                key={cliente.id}
-                className="p-4 bg-[var(--color-card)] rounded-xl shadow-md flex justify-between items-center hover:shadow-[0_0_15px_var(--color-dorado)] transition transform hover:-translate-y-1 cursor-pointer"
-              >
-                <div>
-                  <p className="font-semibold text-lg">{cliente.nombre} {cliente.apellido}</p>
-                  <p className="text-gray-400 text-sm">Edad: {cliente.edad}</p>
-                </div>
-
-                <UIButton variant="gold" onClick={() => seleccionarCliente(cliente)}>
-                  Ver progreso
-                </UIButton>
-              </div>
-            ))}
-          </div>
-        </>
+      {!cliente ? (
+        <div className="p-6 text-[var(--color-texto)]">
+          <p className="text-gray-400">Cargando datos del cliente...</p>
+        </div>
       ) : (
         <>
+          {/* VOLVER */}
           <div className="flex items-center gap-3 mb-6">
-            <button
-              onClick={() => setClienteSeleccionado(null)}
-              className="flex items-center gap-1 text-gray-400 hover:text-[var(--color-dorado)] transition"
-            >
-              <ArrowLeft size={18} /> Volver
-            </button>
+            {volver && (
+              <button
+                onClick={volver}
+                className="flex items-center gap-1 text-gray-400 hover:text-[var(--color-dorado)] transition"
+              >
+                <ArrowLeft size={18} /> Volver
+              </button>
+            )}
             <h2 className="text-2xl font-bold text-[var(--color-dorado)]">
-              {clienteSeleccionado.nombre} {clienteSeleccionado.apellido}
+              {cliente.nombre} {cliente.apellido}
             </h2>
           </div>
 
+          {/* AGREGAR SESIÓN */}
           <div className="bg-[var(--color-card)] p-4 rounded-xl shadow-md mb-6">
             <h3 className="text-lg font-semibold mb-3 text-[var(--color-dorado)]">
               Añadir sesión de entrenamiento
@@ -134,22 +127,26 @@ export default function Progreso() {
                 placeholder="Título de la sesión"
                 className="w-full border border-[var(--color-borde)] rounded-lg px-3 py-2 bg-[var(--color-fondo)] text-[var(--color-texto)]"
               />
+
               <textarea
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
                 placeholder="Descripción, ejercicios, repeticiones, bloques, etc."
                 className="w-full border border-[var(--color-borde)] rounded-lg px-3 py-2 h-28 resize-none bg-[var(--color-fondo)] text-[var(--color-texto)]"
               />
+
               <UIButton variant="gold" onClick={agregarSesion}>
                 <PlusCircle size={18} /> Añadir sesión
               </UIButton>
             </div>
           </div>
 
+          {/* HISTORIAL */}
           <div className="bg-[var(--color-card)] p-4 rounded-xl shadow-md mb-6">
             <h3 className="text-lg font-semibold mb-3 text-[var(--color-dorado)]">
               Historial de sesiones
             </h3>
+
             {sesiones.length === 0 ? (
               <p className="text-gray-400">No hay sesiones registradas.</p>
             ) : (
@@ -178,11 +175,13 @@ export default function Progreso() {
             )}
           </div>
 
+          {/* RENDIMIENTO */}
           <div className="bg-[var(--color-card)] p-4 rounded-xl shadow-md">
-            <Rendimiento clienteId={clienteSeleccionado.id} />
+            <Rendimiento clienteId={cliente.id} />
           </div>
         </>
       )}
     </div>
   );
 }
+

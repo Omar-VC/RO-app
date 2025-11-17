@@ -14,13 +14,14 @@ export function AuthProvider({ children }) {
       setCurrentUser(user);
       setLoading(false);
     });
-
     return unsubscribe;
   }, []);
 
   const logout = async () => {
     await signOut(auth);
     setCurrentUser(null);
+    // 👇 Limpia cliente guardado en localStorage
+    localStorage.removeItem("clienteSeleccionado");
   };
 
   const value = { currentUser, logout };

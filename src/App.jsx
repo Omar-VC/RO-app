@@ -6,31 +6,32 @@ import FichaCliente from "./pages/FichaCliente";
 import Cuotas from "./pages/Cuotas";
 import Progreso from "./pages/Progreso";
 import Login from "./pages/Login";
-import Register from "./pages/Register"; // 👈 importamos la nueva página
+import Register from "./pages/Register";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Aprobaciones from "./pages/Aprobaciones";
 import AgregarCliente from "./pages/AgregarCliente";
 
+// 👇 Importamos el ClienteProvider
+import { ClienteProvider } from "./context/ClienteContext";
 
 function AppContent() {
   const location = useLocation();
 
-  // Ocultamos el header en login y register
-  const hideHeader = location.pathname === "/login" || location.pathname === "/register";
+  const hideHeader =
+    location.pathname === "/login" || location.pathname === "/register";
 
   return (
     <>
       {!hideHeader && <Header />}
 
       <Routes>
-        {/* 🔓 Rutas públicas */}
+        {/* Rutas públicas */}
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> {/* 👈 nueva ruta */}
+        <Route path="/register" element={<Register />} />
         <Route path="/clientes/agregar" element={<AgregarCliente />} />
 
-
-        {/* 🔒 Rutas protegidas */}
+        {/* Rutas protegidas */}
         <Route
           path="/"
           element={
@@ -39,6 +40,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/clientes"
           element={
@@ -47,6 +49,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/clientes/:id"
           element={
@@ -55,6 +58,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/cuotas"
           element={
@@ -63,6 +67,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/progreso"
           element={
@@ -71,6 +76,16 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/progreso/:id"
+          element={
+            <ProtectedRoute>
+              <Progreso />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/aprobaciones"
           element={
@@ -87,7 +102,10 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      {/* 👇 Envolvemos todo con ClienteProvider */}
+      <ClienteProvider>
+        <AppContent />
+      </ClienteProvider>
     </BrowserRouter>
   );
 }
