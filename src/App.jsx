@@ -11,86 +11,86 @@ import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Aprobaciones from "./pages/Aprobaciones";
 import AgregarCliente from "./pages/AgregarCliente";
-
-// 👇 Importamos el ClienteProvider
+import ClienteHome from "./pages/ClienteHome";
 import { ClienteProvider } from "./context/ClienteContext";
 
 function AppContent() {
   const location = useLocation();
-
   const hideHeader =
     location.pathname === "/login" || location.pathname === "/register";
 
   return (
     <>
       {!hideHeader && <Header />}
-
       <Routes>
         {/* Rutas públicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/clientes/agregar" element={<AgregarCliente />} />
 
-        {/* Rutas protegidas */}
+        {/* Admin */}
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <Home />
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/clientes"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <Clientes />
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/clientes/:id"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <FichaCliente />
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/cuotas"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <Cuotas />
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/progreso"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <Progreso />
             </ProtectedRoute>
           }
         />
-
-        <Route
-          path="/progreso/:id"
-          element={
-            <ProtectedRoute>
-              <Progreso />
-            </ProtectedRoute>
-          }
-        />
-
         <Route
           path="/aprobaciones"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <Aprobaciones />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clientes/agregar"
+          element={
+            <ProtectedRoute role="admin">
+              <AgregarCliente />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Cliente */}
+        <Route
+          path="/cliente/home"
+          element={
+            <ProtectedRoute role="cliente">
+              <ClienteHome />
             </ProtectedRoute>
           }
         />
@@ -102,7 +102,6 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      {/* 👇 Envolvemos todo con ClienteProvider */}
       <ClienteProvider>
         <AppContent />
       </ClienteProvider>

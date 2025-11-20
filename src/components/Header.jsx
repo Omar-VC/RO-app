@@ -1,10 +1,11 @@
+
+// src/components/Header.jsx
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const userData = JSON.parse(localStorage.getItem("userData"));
+  const { logout, currentUser } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -15,15 +16,12 @@ export default function Header() {
     }
   };
 
-  console.log("Rol del usuario:", userData?.rol);
-
+  console.log("Rol del usuario (HEADER):", currentUser?.rol);
 
   return (
     <header
       className="text-white shadow-md sticky top-0 z-50"
-      style={{
-        backgroundColor: "var(--color-header)",
-      }}
+      style={{ backgroundColor: "var(--color-header)" }}
     >
       <div className="max-w-6xl mx-auto flex justify-between items-center px-4 py-3">
         {/* Logo */}
@@ -35,8 +33,8 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-6">
-          {/* 🔥 Solo visible para el admin */}
-          {userData?.rol === "admin" && (
+          {/* Solo visible para admin */}
+          {currentUser?.rol === "admin" && (
             <Link
               to="/aprobaciones"
               className="text-[var(--color-dorado)] font-semibold hover:underline"
