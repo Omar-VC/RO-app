@@ -12,6 +12,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Aprobaciones from "./pages/Aprobaciones";
 import AgregarCliente from "./pages/AgregarCliente";
 import ClienteHome from "./pages/ClienteHome";
+import ClienteCuota from "./pages/ClienteCuota";
+import ClienteProgreso from "./pages/ClienteProgreso";
+import ClienteSesiones from "./pages/ClienteSesiones";
 import { ClienteProvider } from "./context/ClienteContext";
 
 function AppContent() {
@@ -91,6 +94,33 @@ function AppContent() {
           element={
             <ProtectedRoute role="cliente">
               <ClienteHome />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/cliente/cuota"
+          element={
+            <ProtectedRoute role="cliente">
+              <ClienteCuota />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/cliente/progreso"
+          element={
+            <ProtectedRoute role="cliente">
+              <ClienteProgreso />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/cliente/sesiones"
+          element={
+            <ProtectedRoute role="cliente">
+              <ClienteSesiones />
             </ProtectedRoute>
           }
         />
