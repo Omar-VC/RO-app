@@ -1,5 +1,5 @@
 // src/firebase/cuotas.js
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
 // Obtener todas las cuotas
@@ -32,4 +32,17 @@ export async function actualizarCuota(id, datos) {
 export async function eliminarCuota(id) {
   const ref = doc(db, "cuotas", id);
   await deleteDoc(ref);
+}
+
+// Escuchar cuotas en tiempo real por cliente
+export function escucharCuotasPorCliente(clienteId, callback) {
+  const q = query(collection(db, "cuotas"), where("clienteId", "==", clienteId));
+
+  return onSnapshot(q, (snapshot) => {
+    const cuotas = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(cuotas);
+  });
 }
